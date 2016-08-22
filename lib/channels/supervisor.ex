@@ -3,7 +3,6 @@ defmodule Channels.Supervisor do
 
   alias Channels.Monitor
 
-  @conn_configs Channels.Config.conn_configs
   @monitor_sup Monitor.Supervisor
 
   def start_link(opts \\ []) do
@@ -12,7 +11,7 @@ defmodule Channels.Supervisor do
 
   def init(:ok) do
     children = [
-      supervisor(Monitor.Supervisor, [@conn_configs, [name: @monitor_sup]])
+      supervisor(Monitor.Supervisor, [Channels.Config.conn_configs, [name: @monitor_sup]])
     ]
 
     supervise(children, strategy: :one_for_one)

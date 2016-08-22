@@ -3,8 +3,6 @@ defmodule Channels.Config do
   This module provides functions to access the Mix configuration.
   """
 
-  @config Application.get_all_env(:channels)
-
   alias Channels.Adapter
   @type config :: Keyword.t
 
@@ -12,11 +10,17 @@ defmodule Channels.Config do
 
   @doc "Configured AMQP adapter."
   @spec adapter(config) :: Adapter.t | no_return
-  def adapter(config \\ @config) do
+  def adapter(config) do
     case Keyword.fetch(config, :adapter) do
       {:ok, adapter} -> adapter
       :error         -> @default_adapter
     end
+  end
+
+  @doc "Configured AMQP adapter."
+  @spec adapter() :: Adapter.t | no_return
+  def adapter() do
+    adapter(Application.get_all_env(:channels))
   end
 
   @default_config []
@@ -27,7 +31,7 @@ defmodule Channels.Config do
 
   @doc "Configured connections"
   @spec conn_configs(config) :: conn_configs | no_return
-  def conn_configs(config \\ @config) do
+  def conn_configs(config) do
     case Keyword.fetch(config, :connections) do
       {:ok, names} ->
         Enum.map(names, &{&1, get_conn_config(config, &1)})
@@ -36,10 +40,28 @@ defmodule Channels.Config do
     end
   end
 
+  @doc "Configured connections"
+  @spec conn_configs() :: conn_configs | no_return
+  def conn_configs() do
+    conn_configs(Application.get_all_env(:channels))
+  end
+
   defp get_conn_config(config, name) do
-    case Keyword.fetch(config, name) do
+    cfg = case Keyword.fetch(config, name) do
       {:ok, conn_config} -> conn_config
       :error             -> @default_config
     end
+
+    Enum.map(cfg, fn({k, val})->
+      case val do
+        {:system, env_var}->
+          case System.get_env(env_var) do
+            nil -> raise "Missing environment variable #{env_var}"
+            v   -> {k, v}
+          end
+        _ ->
+          {k, val}
+      end
+    end)
   end
 end

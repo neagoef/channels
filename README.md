@@ -44,6 +44,9 @@ and `:alt_connection`.
 The configuration for the `:main_connection` will be passed to the underlying adapter when connecting.
 The `:another_connection` does not have a custom configuration, an empty keyword list will be passed to the adapter.
 
+In case we would have to configure things at runtime with environment variables, connections values can be configured
+with `{:system, "ENV_VAR"}`. If the environment variable is not set, an exception will be thrown.
+
 ## Publishing messages
 
 A `Channels.Publisher` is a GenServer that holds a channel and is associated with an exchange.
