@@ -57,7 +57,10 @@ defmodule Channels.Config do
         {:system, env_var}->
           case System.get_env(env_var) do
             nil -> raise "Missing environment variable #{env_var}"
-            v   -> {k, v}
+            v   -> case k do
+              :port -> {k, v |> String.to_integer}
+              _     -> {k, v}
+            end
           end
         _ ->
           {k, val}
