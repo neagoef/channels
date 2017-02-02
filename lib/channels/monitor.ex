@@ -37,7 +37,7 @@ defmodule Channels.Monitor do
   in case of connection crash.
   """
   @spec get_conn(GenServer.server, pid) :: Adapter.conn
-  def get_conn(monitor, pid \\ self) do
+  def get_conn(monitor, pid \\ self()) do
     {:ok, GenServer.call(monitor, {:get, pid}, :infinity)}
   end
 

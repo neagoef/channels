@@ -12,7 +12,7 @@ defmodule Channels.Adapter.Sandbox do
   end
 
   def connect(config) do
-    {:ok, %Conn{config: config, pid: new}}
+    {:ok, %Conn{config: config, pid: new()}}
   end
 
   def monitor(%Conn{pid: conn_pid}) do
@@ -24,7 +24,7 @@ defmodule Channels.Adapter.Sandbox do
   end
 
   def open_channel(%Conn{pid: conn_pid} = conn) do
-    chan = %Chan{conn: conn, pid: new}
+    chan = %Chan{conn: conn, pid: new()}
     add(conn_pid, chan)
 
     {:ok, chan}
@@ -46,7 +46,7 @@ defmodule Channels.Adapter.Sandbox do
     add(chan_pid, {:bind, [queue, exchange, opts]})
   end
 
-  def consume(%Chan{pid: chan_pid}, queue, pid \\ self, opts \\ []) do
+  def consume(%Chan{pid: chan_pid}, queue, pid \\ self(), opts \\ []) do
     {add(chan_pid, {:consume, [queue, pid, opts]}), "a_consumer_tag"}
   end
 
@@ -79,7 +79,7 @@ defmodule Channels.Adapter.Sandbox do
   end
 
   def publish(%Chan{pid: chan_pid}, exchange, payload, routing_key \\ "", opts \\ []) do
-    pid = Keyword.get(opts, :test_pid, self)
+    pid = Keyword.get(opts, :test_pid, self())
     tag = Keyword.get(opts, :tag, "a_delivery_tag")
 
     send(pid, {:deliver, payload, %{routing_key: routing_key, delivery_tag: tag}})

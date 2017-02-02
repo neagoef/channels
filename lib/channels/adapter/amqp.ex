@@ -39,7 +39,7 @@ if Code.ensure_loaded?(AMQP) do
       Queue.bind(chan, queue, exchange, opts)
     end
 
-    def consume(%Channel{} = chan, queue, pid \\ self, opts \\ []) do
+    def consume(%Channel{} = chan, queue, pid \\ self(), opts \\ []) do
       Basic.consume(chan, queue, pid, opts)
     end
 

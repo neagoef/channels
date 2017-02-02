@@ -6,10 +6,10 @@ defmodule Channels.Mixfile do
      description: "An application to manage AMQP consumers and publishers.",
      version: "0.0.5",
      elixir: "~> 1.2",
-     package: package,
+     package: package(),
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps,
+     deps: deps(),
      docs: [extras: ["README.md"], main: "readme"]]
   end
 
